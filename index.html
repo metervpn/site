@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MeterVPN — own your VPN</title>
+<style>
+  :root{
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","JetBrains Mono","Fira Code",Menlo,monospace;
+    --ground:#F5F8FD; --surface:#FFFFFF; --surface-2:#FAFCFF; --line:#DCE4F1;
+    --ink:#0A1120; --muted:#586179; --faint:#8A93A8;
+    --accent:#1E6FEF; --accent-strong:#155BD0; --glow:rgba(30,111,239,.16);
+    --gold:#B0741A; --gold-bg:rgba(176,116,26,.10); --good:#158A5B;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#080B12; --surface:#111827; --surface-2:#161F30; --line:#26324A;
+      --ink:#EAF0FB; --muted:#8B97AE; --faint:#5E6B84;
+      --accent:#2F86FF; --accent-strong:#4F9BFF; --glow:rgba(47,134,255,.30);
+      --gold:#E7A83C; --gold-bg:rgba(231,168,60,.09); --good:#34D399;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#F5F8FD; --surface:#FFFFFF; --surface-2:#FAFCFF; --line:#DCE4F1;
+    --ink:#0A1120; --muted:#586179; --faint:#8A93A8;
+    --accent:#1E6FEF; --accent-strong:#155BD0; --glow:rgba(30,111,239,.16);
+    --gold:#B0741A; --gold-bg:rgba(176,116,26,.10); --good:#158A5B;
+  }
+  :root[data-theme="dark"]{
+    --ground:#080B12; --surface:#111827; --surface-2:#161F30; --line:#26324A;
+    --ink:#EAF0FB; --muted:#8B97AE; --faint:#5E6B84;
+    --accent:#2F86FF; --accent-strong:#4F9BFF; --glow:rgba(47,134,255,.30);
+    --gold:#E7A83C; --gold-bg:rgba(231,168,60,.09); --good:#34D399;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--ground);color:var(--ink);
+       font-family:var(--font-sans);font-size:17px;line-height:1.6;
+       -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 24px}
+  a{color:inherit;text-decoration:none}
+  .eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;
+           text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.02em;font-weight:800;line-height:1.08}
+  .muted{color:var(--muted)}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ground) 82%,transparent);
+      backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;font-size:1.05rem}
+  .brand svg{width:26px;height:26px}
+  .navlinks{display:flex;align-items:center;gap:22px;font-size:.9rem}
+  .navlinks a.mut{color:var(--muted)} .navlinks a.mut:hover{color:var(--ink)}
+  .ghbtn{font-family:var(--font-mono);font-size:.82rem;border:1px solid var(--line);
+         padding:7px 14px;border-radius:8px;color:var(--ink)}
+  .ghbtn:hover{border-color:var(--accent);color:var(--accent)}
+  @media(max-width:620px){.navlinks a.mut{display:none}}
+
+  /* hero */
+  header{position:relative;padding:96px 0 40px;overflow:hidden}
+  header::before{content:"";position:absolute;inset:-40% 0 auto 0;height:520px;pointer-events:none;
+    background:radial-gradient(60% 60% at 50% 0%,var(--glow),transparent 70%)}
+  .hero{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:26px}
+  .shield{width:112px;height:112px;filter:drop-shadow(0 10px 30px var(--glow))}
+  .needle{transform-origin:128px 136px}
+  h1.title{font-size:clamp(2.5rem,6.4vw,4.6rem)}
+  h1.title .g{color:var(--accent)}
+  .sub{max-width:60ch;font-size:clamp(1.05rem,2.2vw,1.28rem);color:var(--muted);line-height:1.55}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:650;font-size:1rem;
+       padding:14px 24px;border-radius:12px;border:1px solid transparent;cursor:pointer;transition:.16s}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 8px 26px -8px var(--glow)}
+  .btn-primary:hover{background:var(--accent-strong);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--muted)}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--muted)}
+  .arrow{transition:transform .16s}.btn-primary:hover .arrow{transform:translateX(3px)}
+
+  /* section shell */
+  section{padding:76px 0;border-top:1px solid var(--line)}
+  .sechead{display:flex;flex-direction:column;gap:12px;margin-bottom:40px}
+  .sechead h2{font-size:clamp(1.7rem,3.4vw,2.5rem)}
+  .sechead p{margin:0;max-width:62ch;color:var(--muted);font-size:1.06rem}
+
+  /* AI prompt terminal */
+  .terminal{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+            box-shadow:0 24px 60px -30px rgba(0,0,0,.5)}
+  .term-bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);
+            background:var(--surface-2)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+  .term-title{margin-left:8px;font-family:var(--font-mono);font-size:.78rem;color:var(--faint)}
+  .term-body{padding:22px 22px 20px;font-family:var(--font-mono);font-size:.94rem;line-height:1.72}
+  .term-body .lead{color:var(--faint)}
+  .term-body .ask{color:var(--accent)}
+  #prompt{margin:6px 0 0;white-space:pre-wrap;word-break:break-word;color:var(--ink);min-height:8.6em}
+  .cursor{display:inline-block;width:8px;height:1.05em;background:var(--accent);
+          vertical-align:-2px;margin-left:1px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.cursor{animation:none}}
+  .term-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;
+             padding:14px 18px;border-top:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
+  .term-foot .hint{font-family:var(--font-mono);font-size:.76rem;color:var(--faint)}
+  .copy{font-family:var(--font-mono);font-size:.82rem;font-weight:600;border:1px solid var(--line);
+        background:transparent;color:var(--ink);padding:8px 15px;border-radius:8px;cursor:pointer;transition:.15s}
+  .copy:hover{border-color:var(--accent);color:var(--accent)}
+  .copy.done{border-color:var(--good);color:var(--good)}
+  .pre{display:flex;gap:14px;flex-wrap:wrap;margin-top:22px}
+  .pre .chip{font-family:var(--font-mono);font-size:.8rem;color:var(--muted);
+             border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:var(--surface)}
+  .pre .chip b{color:var(--ink);font-weight:600}
+
+  /* tiers */
+  .tiers{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:760px){.tiers{grid-template-columns:1fr}}
+  .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+        padding:30px 28px;display:flex;flex-direction:column;gap:18px}
+  .card.free{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));
+             box-shadow:0 20px 60px -34px var(--glow)}
+  .card .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .card h3{font-size:1.55rem;letter-spacing:-.01em}
+  .pill{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+        font-weight:700;padding:5px 11px;border-radius:999px}
+  .pill.ok{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+  .pill.soon{color:var(--gold);background:var(--gold-bg)}
+  .kicker{font-family:var(--font-mono);font-size:.82rem;color:var(--muted);margin-top:-8px}
+  .price{font-size:1.05rem;font-weight:700;color:var(--ink)}
+  .price small{font-weight:400;color:var(--muted);font-size:.85rem}
+  ul.feat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px;font-size:.98rem}
+  ul.feat li{display:flex;gap:11px;align-items:flex-start;color:var(--muted)}
+  ul.feat li b{color:var(--ink);font-weight:600}
+  ul.feat svg{flex:0 0 auto;margin-top:3px;width:17px;height:17px}
+  .card .fill{flex:1}
+  .card .act{display:block;text-align:center;font-weight:650;padding:13px;border-radius:11px;transition:.16s}
+  .act.free{background:var(--accent);color:#fff}.act.free:hover{background:var(--accent-strong)}
+  .act.soon{border:1px solid var(--line);color:var(--faint);cursor:not-allowed}
+
+  /* safety row */
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:760px){.three{grid-template-columns:1fr}}
+  .feat3{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .feat3 .lab{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+              color:var(--accent);margin-bottom:10px}
+  .feat3 h3{font-size:1.12rem;margin-bottom:7px}
+  .feat3 p{margin:0;color:var(--muted);font-size:.95rem}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:44px 0 60px}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:.9rem}
+  .foot .brand svg{width:22px;height:22px}
+  .foot .muted{color:var(--faint)}
+  .foot a.mut{color:var(--muted)}.foot a.mut:hover{color:var(--accent)}
+  code.inl{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);
+           border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap row">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 256 256" aria-hidden="true"><path fill="var(--accent)" d="M128 24 L211 54 C217 56 221 61 221 68 L221 126 C221 179 183 215 128 235 C73 215 35 179 35 126 L35 68 C35 61 39 56 45 54 Z"/><path fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" d="M86 136 A42 42 0 0 1 170 136"/><line x1="128" y1="136" x2="159" y2="109" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="128" cy="136" r="9" fill="#fff"/></svg>
+      MeterVPN
+    </a>
+    <div class="navlinks">
+      <a class="mut" href="#free">Free</a>
+      <a class="mut" href="#pro">Pro</a>
+      <a class="ghbtn" href="https://github.com/metervpn/metervpn-free">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header id="top">
+  <div class="wrap hero">
+    <svg class="shield" viewBox="0 0 256 256" aria-label="MeterVPN">
+      <path fill="var(--accent)" d="M128 24 L211 54 C217 56 221 61 221 68 L221 126 C221 179 183 215 128 235 C73 215 35 179 35 126 L35 68 C35 61 39 56 45 54 Z"/>
+      <path fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" d="M86 136 A42 42 0 0 1 170 136"/>
+      <g class="needle"><line x1="128" y1="136" x2="159" y2="109" stroke="#fff" stroke-width="9" stroke-linecap="round"/></g>
+      <circle cx="128" cy="136" r="9" fill="#fff"/>
+    </svg>
+    <p class="eyebrow">Open-source · self-hosted</p>
+    <h1 class="title">A VPN you own —<br><span class="g">set up by your AI.</span></h1>
+    <p class="sub">MeterVPN Free runs a WireGuard exit on <b style="color:var(--ink)">your own cloud</b>. Point your AI coding agent at the repo and it provisions everything. You just tick which sites go through it — the rest stays direct.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#free">Get MeterVPN Free <span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#pro">MeterVPN Pro — soon</a>
+    </div>
+  </div>
+</header>
+
+<section id="setup">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">How Free works</p>
+      <h2>Don't read the docs. Tell your AI.</h2>
+      <p>MeterVPN Free is built to be installed by an AI coding agent — Claude Code, Codex, Cursor. All you need is an AWS account; hand your agent this and it takes care of the rest — credentials, servers, everything:</p>
+    </div>
+    <div class="terminal">
+      <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">you → your AI agent</span></div>
+      <div class="term-body">
+        <div class="lead"># paste this to Claude Code / Codex / Cursor</div>
+        <div id="prompt"><span class="cursor"></span></div>
+      </div>
+      <div class="term-foot">
+        <span class="hint">Swap the region for whichever AWS region is closest to you.</span>
+        <button class="copy" id="copy">Copy prompt</button>
+      </div>
+    </div>
+    <div class="pre">
+      <span class="chip">You need: <b>an AWS account</b></span>
+      <span class="chip">an <b>AI coding agent</b></span>
+      <span class="chip">that's it — <b>the agent does the rest</b></span>
+    </div>
+  </div>
+</section>
+
+<section id="free">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">Two ways to run it</p>
+      <h2>Self-host it free, or let us host it.</h2>
+      <p>Same VPN, two tiers. Run it yourself on your own AWS today, or wait for the fully managed version.</p>
+    </div>
+    <div class="tiers">
+      <div class="card free">
+        <div class="top"><h3>MeterVPN Free</h3><span class="pill ok">● Available</span></div>
+        <p class="kicker">Self-hosted · Open source · Apache-2.0</p>
+        <p class="price">$0 <small>— you pay AWS directly, ~pennies a day</small></p>
+        <ul class="feat">
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>You own the exit.</b> The server lives in your AWS account — no third party sees your traffic.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Split by domain.</b> Only the sites you pick route through the VPN; everything else stays direct.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Any region.</b> Provision the exit wherever you want — Tokyo, Singapore, Frankfurt, US.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>A real app.</b> macOS control panel with presets, EN/中, and a one-click kill switch.</span></li>
+        </ul>
+        <div class="fill"></div>
+        <a class="act free" href="https://github.com/metervpn/metervpn-free">View on GitHub ↗</a>
+      </div>
+
+      <div class="card" id="pro">
+        <div class="top"><h3>MeterVPN Pro</h3><span class="pill soon">Coming soon</span></div>
+        <p class="kicker">Fully hosted · Zero setup</p>
+        <p class="price">Coming soon</p>
+        <ul class="feat">
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>No cloud account.</b> Nothing to provision — we run the servers for you.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>Zero ops.</b> No servers to keep alive, patch, or watch. It just works.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>One tap.</b> Pick a region, connect. Built for people who never want to touch a terminal.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>For the whole household.</b> Share it with people who don't run AWS.</span></li>
+        </ul>
+        <div class="fill"></div>
+        <span class="act soon" aria-disabled="true">In the works</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">Why it's safe</p>
+      <h2>It can't take your whole network down.</h2>
+      <p>The failure mode of most VPNs — flip it on, everything breaks — is designed out. MeterVPN Free routes by rule, not by default.</p>
+    </div>
+    <div class="three">
+      <div class="feat3"><div class="lab">Default</div><h3>Direct, always</h3><p>Nothing routes through the VPN unless you asked for it. Unlisted traffic never touches the tunnel.</p></div>
+      <div class="feat3"><div class="lab">Selected</div><h3>Only your sites</h3><p>A local rules file sends just the domains you chose to your exit. Change them anytime, no reconnect.</p></div>
+      <div class="feat3"><div class="lab">Kill switch</div><h3>One click back</h3><p>Disconnect clears the routing instantly. If the tunnel ever drops, your direct traffic is unaffected.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 256 256" aria-hidden="true"><path fill="var(--accent)" d="M128 24 L211 54 C217 56 221 61 221 68 L221 126 C221 179 183 215 128 235 C73 215 35 179 35 126 L35 68 C35 61 39 56 45 54 Z"/><path fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" d="M86 136 A42 42 0 0 1 170 136"/><line x1="128" y1="136" x2="159" y2="109" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="128" cy="136" r="9" fill="#fff"/></svg>
+      MeterVPN
+    </a>
+    <div class="muted">Free is open source under Apache-2.0. Pro is on the way.</div>
+    <div style="display:flex;gap:20px"><a class="mut" href="https://github.com/metervpn/metervpn-free">GitHub</a><a class="mut" href="#free">Free</a><a class="mut" href="#pro">Pro</a></div>
+  </div>
+</footer>
+
+<script>
+  var promptText =
+"Read https://github.com/metervpn/metervpn-free and follow its README to\n" +
+"set up a personal WireGuard VPN on my own AWS account — set up my AWS\n" +
+"credentials first if they aren't configured yet. Provision the exit in\n" +
+"Singapore (ap-southeast-1), then launch the control panel so I can pick\n" +
+"which sites route through it.";
+
+  var el = document.getElementById('prompt');
+  var cursor = '<span class="cursor"></span>';
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function typeIn(){
+    if(reduce){ el.innerHTML = esc(promptText) + cursor; return; }
+    var i = 0;
+    (function step(){
+      el.innerHTML = esc(promptText.slice(0,i)) + cursor;
+      i++;
+      if(i <= promptText.length){ setTimeout(step, 14); }
+    })();
+  }
+
+  // type in when the terminal scrolls into view (once)
+  var fired = false;
+  var term = document.querySelector('.terminal');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting && !fired){ fired = true; typeIn(); io.disconnect(); } });
+    }, {threshold:.35});
+    io.observe(term);
+  } else { typeIn(); }
+
+  var btn = document.getElementById('copy');
+  btn.addEventListener('click', function(){
+    navigator.clipboard.writeText(promptText).then(function(){
+      btn.textContent = 'Copied ✓'; btn.classList.add('done');
+      setTimeout(function(){ btn.textContent = 'Copy prompt'; btn.classList.remove('done'); }, 1900);
+    });
+  });
+
+  // gauge needle: settle once on load
+  if(!reduce){
+    var n = document.querySelector('.needle');
+    if(n){ n.animate([{transform:'rotate(-34deg)'},{transform:'rotate(0deg)'}],
+      {duration:1100, easing:'cubic-bezier(.2,.8,.2,1)'}); }
+  }
+</script>
+</body>
+</html>
