@@ -48,20 +48,21 @@
   h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.02em;font-weight:800;line-height:1.08}
   .muted{color:var(--muted)}
 
-  /* nav */
   nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ground) 82%,transparent);
       backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
   nav .row{display:flex;align-items:center;justify-content:space-between;height:64px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;font-size:1.05rem}
   .brand svg{width:26px;height:26px}
-  .navlinks{display:flex;align-items:center;gap:22px;font-size:.9rem}
+  .navlinks{display:flex;align-items:center;gap:18px;font-size:.9rem}
   .navlinks a.mut{color:var(--muted)} .navlinks a.mut:hover{color:var(--ink)}
   .ghbtn{font-family:var(--font-mono);font-size:.82rem;border:1px solid var(--line);
          padding:7px 14px;border-radius:8px;color:var(--ink)}
   .ghbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .lang{font-family:var(--font-mono);font-size:.82rem;font-weight:600;border:1px solid var(--line);
+        background:transparent;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer}
+  .lang:hover{color:var(--accent);border-color:var(--accent)}
   @media(max-width:620px){.navlinks a.mut{display:none}}
 
-  /* hero */
   header{position:relative;padding:96px 0 40px;overflow:hidden}
   header::before{content:"";position:absolute;inset:-40% 0 auto 0;height:520px;pointer-events:none;
     background:radial-gradient(60% 60% at 50% 0%,var(--glow),transparent 70%)}
@@ -80,13 +81,11 @@
   .btn-ghost:hover{color:var(--ink);border-color:var(--muted)}
   .arrow{transition:transform .16s}.btn-primary:hover .arrow{transform:translateX(3px)}
 
-  /* section shell */
   section{padding:76px 0;border-top:1px solid var(--line)}
   .sechead{display:flex;flex-direction:column;gap:12px;margin-bottom:40px}
   .sechead h2{font-size:clamp(1.7rem,3.4vw,2.5rem)}
   .sechead p{margin:0;max-width:62ch;color:var(--muted);font-size:1.06rem}
 
-  /* AI prompt terminal */
   .terminal{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;
             box-shadow:0 24px 60px -30px rgba(0,0,0,.5)}
   .term-bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);
@@ -96,7 +95,6 @@
   .term-title{margin-left:8px;font-family:var(--font-mono);font-size:.78rem;color:var(--faint)}
   .term-body{padding:22px 22px 20px;font-family:var(--font-mono);font-size:.94rem;line-height:1.72}
   .term-body .lead{color:var(--faint)}
-  .term-body .ask{color:var(--accent)}
   #prompt{margin:6px 0 0;white-space:pre-wrap;word-break:break-word;color:var(--ink);min-height:8.6em}
   .cursor{display:inline-block;width:8px;height:1.05em;background:var(--accent);
           vertical-align:-2px;margin-left:1px;animation:blink 1s steps(1) infinite}
@@ -114,7 +112,6 @@
              border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:var(--surface)}
   .pre .chip b{color:var(--ink);font-weight:600}
 
-  /* tiers */
   .tiers{display:grid;grid-template-columns:1fr 1fr;gap:22px}
   @media(max-width:760px){.tiers{grid-template-columns:1fr}}
   .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
@@ -139,7 +136,6 @@
   .act.free{background:var(--accent);color:#fff}.act.free:hover{background:var(--accent-strong)}
   .act.soon{border:1px solid var(--line);color:var(--faint);cursor:not-allowed}
 
-  /* safety row */
   .three{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
   @media(max-width:760px){.three{grid-template-columns:1fr}}
   .feat3{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
@@ -148,14 +144,11 @@
   .feat3 h3{font-size:1.12rem;margin-bottom:7px}
   .feat3 p{margin:0;color:var(--muted);font-size:.95rem}
 
-  /* footer */
   footer{border-top:1px solid var(--line);padding:44px 0 60px}
   .foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:.9rem}
   .foot .brand svg{width:22px;height:22px}
   .foot .muted{color:var(--faint)}
   .foot a.mut{color:var(--muted)}.foot a.mut:hover{color:var(--accent)}
-  code.inl{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);
-           border:1px solid var(--line);border-radius:5px;padding:1px 6px}
 </style>
 </head>
 <body>
@@ -167,9 +160,10 @@
       MeterVPN
     </a>
     <div class="navlinks">
-      <a class="mut" href="#free">Free</a>
-      <a class="mut" href="#pro">Pro</a>
+      <a class="mut" href="#free" data-i18n="navFree">Free</a>
+      <a class="mut" href="#pro" data-i18n="navPro">Pro</a>
       <a class="ghbtn" href="https://github.com/metervpn/metervpn-free">GitHub ↗</a>
+      <button class="lang" id="langToggle" type="button">中</button>
     </div>
   </div>
 </nav>
@@ -182,12 +176,12 @@
       <g class="needle"><line x1="128" y1="136" x2="159" y2="109" stroke="#fff" stroke-width="9" stroke-linecap="round"/></g>
       <circle cx="128" cy="136" r="9" fill="#fff"/>
     </svg>
-    <p class="eyebrow">Open-source · self-hosted</p>
-    <h1 class="title">A VPN you own —<br><span class="g">set up by your AI.</span></h1>
-    <p class="sub">MeterVPN Free runs a WireGuard exit on <b style="color:var(--ink)">your own cloud</b>. Point your AI coding agent at the repo and it provisions everything. You just tick which sites go through it — the rest stays direct.</p>
+    <p class="eyebrow" data-i18n="heroEyebrow">Open-source · self-hosted</p>
+    <h1 class="title" data-i18n-html="heroTitle">A VPN you own —<br><span class="g">set up by your AI.</span></h1>
+    <p class="sub" data-i18n-html="heroSub">MeterVPN Free runs a WireGuard exit on <b style="color:var(--ink)">your own cloud</b>. Point your AI coding agent at the repo and it provisions everything. You just tick which sites go through it — the rest stays direct.</p>
     <div class="cta">
-      <a class="btn btn-primary" href="#free">Get MeterVPN Free <span class="arrow">→</span></a>
-      <a class="btn btn-ghost" href="#pro">MeterVPN Pro — soon</a>
+      <a class="btn btn-primary" href="#free" data-i18n-html="ctaFree">Get MeterVPN Free <span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#pro" data-i18n="ctaPro">MeterVPN Pro — soon</a>
     </div>
   </div>
 </header>
@@ -195,25 +189,25 @@
 <section id="setup">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">How Free works</p>
-      <h2>Don't read the docs. Tell your AI.</h2>
-      <p>MeterVPN Free is built to be installed by an AI coding agent — Claude Code, Codex, Cursor. All you need is an AWS account; hand your agent this and it takes care of the rest — credentials, servers, everything:</p>
+      <p class="eyebrow" data-i18n="setupEyebrow">How Free works</p>
+      <h2 data-i18n="setupH2">Don't read the docs. Tell your AI.</h2>
+      <p data-i18n="setupP">MeterVPN Free is built to be installed by an AI coding agent — Claude Code, Codex, Cursor. All you need is an AWS account; hand your agent this and it takes care of the rest — credentials, servers, everything:</p>
     </div>
     <div class="terminal">
-      <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">you → your AI agent</span></div>
+      <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title" data-i18n="termTitle">you → your AI agent</span></div>
       <div class="term-body">
-        <div class="lead"># paste this to Claude Code / Codex / Cursor</div>
+        <div class="lead" data-i18n="termLead"># paste this to Claude Code / Codex / Cursor</div>
         <div id="prompt"><span class="cursor"></span></div>
       </div>
       <div class="term-foot">
-        <span class="hint">Swap the region for whichever AWS region is closest to you.</span>
-        <button class="copy" id="copy">Copy prompt</button>
+        <span class="hint" data-i18n="termHint">Swap the region for whichever AWS region is closest to you.</span>
+        <button class="copy" id="copy" data-i18n="copyBtn">Copy prompt</button>
       </div>
     </div>
     <div class="pre">
-      <span class="chip">You need: <b>an AWS account</b></span>
-      <span class="chip">an <b>AI coding agent</b></span>
-      <span class="chip">that's it — <b>the agent does the rest</b></span>
+      <span class="chip" data-i18n-html="chip1">You need: <b>an AWS account</b></span>
+      <span class="chip" data-i18n-html="chip2">an <b>AI coding agent</b></span>
+      <span class="chip" data-i18n-html="chip3">that's it — <b>the agent does the rest</b></span>
     </div>
   </div>
 </section>
@@ -221,37 +215,37 @@
 <section id="free">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">Two ways to run it</p>
-      <h2>Self-host it free, or let us host it.</h2>
-      <p>Same VPN, two tiers. Run it yourself on your own AWS today, or wait for the fully managed version.</p>
+      <p class="eyebrow" data-i18n="tiersEyebrow">Two ways to run it</p>
+      <h2 data-i18n="tiersH2">Self-host it free, or let us host it.</h2>
+      <p data-i18n="tiersP">Same VPN, two tiers. Run it yourself on your own AWS today, or wait for the fully managed version.</p>
     </div>
     <div class="tiers">
       <div class="card free">
-        <div class="top"><h3>MeterVPN Free</h3><span class="pill ok">● Available</span></div>
-        <p class="kicker">Self-hosted · Open source · Apache-2.0</p>
-        <p class="price">$0 <small>— you pay AWS directly, ~pennies a day</small></p>
+        <div class="top"><h3>MeterVPN Free</h3><span class="pill ok" data-i18n="freePill">● Available</span></div>
+        <p class="kicker" data-i18n="freeKicker">Self-hosted · Open source · Apache-2.0</p>
+        <p class="price" data-i18n-html="freePrice">$0 <small>— you pay AWS directly, ~pennies a day</small></p>
         <ul class="feat">
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>You own the exit.</b> The server lives in your AWS account — no third party sees your traffic.</span></li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Split by domain.</b> Only the sites you pick route through the VPN; everything else stays direct.</span></li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Any region.</b> Provision the exit wherever you want — Tokyo, Singapore, Frankfurt, US.</span></li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>A real app.</b> macOS control panel with presets, EN/中, and a one-click kill switch.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n-html="freeF1"><b>You own the exit.</b> The server lives in your AWS account — no third party sees your traffic.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n-html="freeF2"><b>Split by domain.</b> Only the sites you pick route through the VPN; everything else stays direct.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n-html="freeF3"><b>Any region.</b> Provision the exit wherever you want — Tokyo, Singapore, Frankfurt, US.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n-html="freeF4"><b>A real app.</b> macOS control panel with presets, EN/中, and a one-click kill switch.</span></li>
         </ul>
         <div class="fill"></div>
-        <a class="act free" href="https://github.com/metervpn/metervpn-free">View on GitHub ↗</a>
+        <a class="act free" href="https://github.com/metervpn/metervpn-free" data-i18n="freeBtn">View on GitHub ↗</a>
       </div>
 
       <div class="card" id="pro">
-        <div class="top"><h3>MeterVPN Pro</h3><span class="pill soon">Coming soon</span></div>
-        <p class="kicker">Fully hosted · Zero setup</p>
-        <p class="price">Coming soon</p>
+        <div class="top"><h3>MeterVPN Pro</h3><span class="pill soon" data-i18n="proPill">Coming soon</span></div>
+        <p class="kicker" data-i18n="proKicker">Fully hosted · Zero setup</p>
+        <p class="price" data-i18n="proPrice">Coming soon</p>
         <ul class="feat">
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>No cloud account.</b> Nothing to provision — we run the servers for you.</span></li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>Zero ops.</b> No servers to keep alive, patch, or watch. It just works.</span></li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>One tap.</b> Pick a region, connect. Built for people who never want to touch a terminal.</span></li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span><b>For the whole household.</b> Share it with people who don't run AWS.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span data-i18n-html="proF1"><b>No cloud account.</b> Nothing to provision — we run the servers for you.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span data-i18n-html="proF2"><b>Zero ops.</b> No servers to keep alive, patch, or watch. It just works.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span data-i18n-html="proF3"><b>One tap.</b> Pick a region, connect. Built for people who never want to touch a terminal.</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 6.5v4l2.5 1.5" stroke-linecap="round"/></svg><span data-i18n-html="proF4"><b>For the whole household.</b> Share it with people who don't run AWS.</span></li>
         </ul>
         <div class="fill"></div>
-        <span class="act soon" aria-disabled="true">In the works</span>
+        <span class="act soon" aria-disabled="true" data-i18n="proBtn">In the works</span>
       </div>
     </div>
   </div>
@@ -260,14 +254,14 @@
 <section id="how">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">Why it's safe</p>
-      <h2>It can't take your whole network down.</h2>
-      <p>The failure mode of most VPNs — flip it on, everything breaks — is designed out. MeterVPN Free routes by rule, not by default.</p>
+      <p class="eyebrow" data-i18n="howEyebrow">Why it's safe</p>
+      <h2 data-i18n="howH2">It can't take your whole network down.</h2>
+      <p data-i18n="howP">The failure mode of most VPNs — flip it on, everything breaks — is designed out. MeterVPN Free routes by rule, not by default.</p>
     </div>
     <div class="three">
-      <div class="feat3"><div class="lab">Default</div><h3>Direct, always</h3><p>Nothing routes through the VPN unless you asked for it. Unlisted traffic never touches the tunnel.</p></div>
-      <div class="feat3"><div class="lab">Selected</div><h3>Only your sites</h3><p>A local rules file sends just the domains you chose to your exit. Change them anytime, no reconnect.</p></div>
-      <div class="feat3"><div class="lab">Kill switch</div><h3>One click back</h3><p>Disconnect clears the routing instantly. If the tunnel ever drops, your direct traffic is unaffected.</p></div>
+      <div class="feat3"><div class="lab" data-i18n="how1lab">Default</div><h3 data-i18n="how1h3">Direct, always</h3><p data-i18n="how1p">Nothing routes through the VPN unless you asked for it. Unlisted traffic never touches the tunnel.</p></div>
+      <div class="feat3"><div class="lab" data-i18n="how2lab">Selected</div><h3 data-i18n="how2h3">Only your sites</h3><p data-i18n="how2p">A local rules file sends just the domains you chose to your exit. Change them anytime, no reconnect.</p></div>
+      <div class="feat3"><div class="lab" data-i18n="how3lab">Kill switch</div><h3 data-i18n="how3h3">One click back</h3><p data-i18n="how3p">Disconnect clears the routing instantly. If the tunnel ever drops, your direct traffic is unaffected.</p></div>
     </div>
   </div>
 </section>
@@ -278,58 +272,153 @@
       <svg viewBox="0 0 256 256" aria-hidden="true"><path fill="var(--accent)" d="M128 24 L211 54 C217 56 221 61 221 68 L221 126 C221 179 183 215 128 235 C73 215 35 179 35 126 L35 68 C35 61 39 56 45 54 Z"/><path fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" d="M86 136 A42 42 0 0 1 170 136"/><line x1="128" y1="136" x2="159" y2="109" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="128" cy="136" r="9" fill="#fff"/></svg>
       MeterVPN
     </a>
-    <div class="muted">Free is open source under Apache-2.0. Pro is on the way.</div>
-    <div style="display:flex;gap:20px"><a class="mut" href="https://github.com/metervpn/metervpn-free">GitHub</a><a class="mut" href="#free">Free</a><a class="mut" href="#pro">Pro</a></div>
+    <div class="muted" data-i18n="footNote">Free is open source under Apache-2.0. Pro is on the way.</div>
+    <div style="display:flex;gap:20px"><a class="mut" href="https://github.com/metervpn/metervpn-free">GitHub</a><a class="mut" href="#free" data-i18n="navFree">Free</a><a class="mut" href="#pro" data-i18n="navPro">Pro</a></div>
   </div>
 </footer>
 
 <script>
-  var promptText =
+  var I18N = {
+    en: {
+      navFree:"Free", navPro:"Pro",
+      heroEyebrow:"Open-source · self-hosted",
+      heroTitle:'A VPN you own —<br><span class="g">set up by your AI.</span>',
+      heroSub:'MeterVPN Free runs a WireGuard exit on <b style="color:var(--ink)">your own cloud</b>. Point your AI coding agent at the repo and it provisions everything. You just tick which sites go through it — the rest stays direct.',
+      ctaFree:'Get MeterVPN Free <span class="arrow">→</span>', ctaPro:"MeterVPN Pro — soon",
+      setupEyebrow:"How Free works", setupH2:"Don't read the docs. Tell your AI.",
+      setupP:"MeterVPN Free is built to be installed by an AI coding agent — Claude Code, Codex, Cursor. All you need is an AWS account; hand your agent this and it takes care of the rest — credentials, servers, everything:",
+      termTitle:"you → your AI agent", termLead:"# paste this to Claude Code / Codex / Cursor",
+      termHint:"Swap the region for whichever AWS region is closest to you.", copyBtn:"Copy prompt",
+      chip1:"You need: <b>an AWS account</b>", chip2:"an <b>AI coding agent</b>", chip3:"that's it — <b>the agent does the rest</b>",
+      tiersEyebrow:"Two ways to run it", tiersH2:"Self-host it free, or let us host it.",
+      tiersP:"Same VPN, two tiers. Run it yourself on your own AWS today, or wait for the fully managed version.",
+      freePill:"● Available", freeKicker:"Self-hosted · Open source · Apache-2.0",
+      freePrice:'$0 <small>— you pay AWS directly, ~pennies a day</small>',
+      freeF1:"<b>You own the exit.</b> The server lives in your AWS account — no third party sees your traffic.",
+      freeF2:"<b>Split by domain.</b> Only the sites you pick route through the VPN; everything else stays direct.",
+      freeF3:"<b>Any region.</b> Provision the exit wherever you want — Tokyo, Singapore, Frankfurt, US.",
+      freeF4:"<b>A real app.</b> macOS control panel with presets, EN/中, and a one-click kill switch.",
+      freeBtn:"View on GitHub ↗",
+      proPill:"Coming soon", proKicker:"Fully hosted · Zero setup", proPrice:"Coming soon",
+      proF1:"<b>No cloud account.</b> Nothing to provision — we run the servers for you.",
+      proF2:"<b>Zero ops.</b> No servers to keep alive, patch, or watch. It just works.",
+      proF3:"<b>One tap.</b> Pick a region, connect. Built for people who never want to touch a terminal.",
+      proF4:"<b>For the whole household.</b> Share it with people who don't run AWS.",
+      proBtn:"In the works",
+      howEyebrow:"Why it's safe", howH2:"It can't take your whole network down.",
+      howP:"The failure mode of most VPNs — flip it on, everything breaks — is designed out. MeterVPN Free routes by rule, not by default.",
+      how1lab:"Default", how1h3:"Direct, always", how1p:"Nothing routes through the VPN unless you asked for it. Unlisted traffic never touches the tunnel.",
+      how2lab:"Selected", how2h3:"Only your sites", how2p:"A local rules file sends just the domains you chose to your exit. Change them anytime, no reconnect.",
+      how3lab:"Kill switch", how3h3:"One click back", how3p:"Disconnect clears the routing instantly. If the tunnel ever drops, your direct traffic is unaffected.",
+      footNote:"Free is open source under Apache-2.0. Pro is on the way."
+    },
+    zh: {
+      navFree:"Free", navPro:"Pro",
+      heroEyebrow:"开源 · 自托管",
+      heroTitle:'你自己的 VPN —<br><span class="g">让 AI 替你搭好。</span>',
+      heroSub:'MeterVPN Free 在<b style="color:var(--ink)">你自己的云</b>上跑一个 WireGuard 出口。把仓库丢给你的 AI 编程助手,它全自动搭好。你只需勾选哪些网站走 VPN —— 其余照常直连。',
+      ctaFree:'获取 MeterVPN Free <span class="arrow">→</span>', ctaPro:"MeterVPN Pro —— 即将推出",
+      setupEyebrow:"Free 怎么用", setupH2:"别读文档,直接告诉 AI。",
+      setupP:'MeterVPN Free 就是为"让 AI 编程助手来装"而设计的 —— Claude Code、Codex、Cursor 都行。你只要有个 AWS 账号;把下面这段丢给你的 agent,凭证、服务器、一切它全包了:',
+      termTitle:"你 → 你的 AI agent", termLead:"# 贴给 Claude Code / Codex / Cursor",
+      termHint:"把区域换成离你最近的 AWS 区域即可。", copyBtn:"复制提示词",
+      chip1:"你需要:<b>一个 AWS 账号</b>", chip2:"一个 <b>AI 编程助手</b>", chip3:"就这些 —— <b>其余交给 agent</b>",
+      tiersEyebrow:"两种用法", tiersH2:"自己免费托管,或交给我们托管。",
+      tiersP:"同一套 VPN,两个档位。今天就能在自己的 AWS 上自建,或者等我们的全托管版。",
+      freePill:"● 可用", freeKicker:"自托管 · 开源 · Apache-2.0",
+      freePrice:'$0 <small>—— 直接付 AWS,一天几毛钱</small>',
+      freeF1:"<b>出口归你所有。</b>服务器在你自己的 AWS 账号里 —— 没有第三方能看到你的流量。",
+      freeF2:"<b>按域名分流。</b>只有你选的网站走 VPN,其余全部直连。",
+      freeF3:"<b>任意区域。</b>出口想开在哪就开在哪 —— 东京、新加坡、法兰克福、美国。",
+      freeF4:"<b>真正的 App。</b>macOS 控制台:预设网站、中英切换、一键断开。",
+      freeBtn:"在 GitHub 查看 ↗",
+      proPill:"即将推出", proKicker:"全托管 · 零配置", proPrice:"即将推出",
+      proF1:"<b>无需云账号。</b>什么都不用开 —— 服务器我们来跑。",
+      proF2:"<b>零运维。</b>不用维护、打补丁、盯着服务器。开箱即用。",
+      proF3:"<b>一键连接。</b>选区域、连上。为从不想碰终端的人而做。",
+      proF4:"<b>全家可用。</b>分享给不玩 AWS 的家人朋友。",
+      proBtn:"开发中",
+      howEyebrow:"为什么安全", howH2:"它不会把你整个网络弄挂。",
+      howP:'大多数 VPN 那种"一开全崩"的毛病,这里从设计上就没有。MeterVPN Free 按规则分流,不默认全走。',
+      how1lab:"默认", how1h3:"永远直连", how1p:"没点名的一律不走 VPN。未列出的流量根本不碰隧道。",
+      how2lab:"选中", how2h3:"只走你选的", how2p:"本地规则文件只把你选的域名发到出口。随时改,无需重连。",
+      how3lab:"急停", how3h3:"一键恢复", how3p:"断开即刻清除分流。隧道万一掉了,你的直连流量不受影响。",
+      footNote:"Free 基于 Apache-2.0 开源。Pro 正在路上。"
+    }
+  };
+  var PROMPT = {
+    en:
 "Read https://github.com/metervpn/metervpn-free and follow its README to\n" +
 "set up a personal WireGuard VPN on my own AWS account — set up my AWS\n" +
 "credentials first if they aren't configured yet. Provision the exit in\n" +
 "US East (us-east-1), then launch the control panel so I can pick\n" +
-"which sites route through it.";
+"which sites route through it.",
+    zh:
+"阅读 https://github.com/metervpn/metervpn-free 并按它的 README,在我自己的\n" +
+"AWS 账号上搭一个个人 WireGuard VPN —— 如果我的 AWS 凭证还没配好,先帮我配。\n" +
+"把出口开在 US East(us-east-1),然后启动控制台,让我挑哪些网站走它。"
+  };
 
-  var el = document.getElementById('prompt');
-  var cursor = '<span class="cursor"></span>';
+  var lang = localStorage.getItem('mv_lang') ||
+             ((navigator.language || 'en').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
   var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var promptEl = document.getElementById('prompt');
+  var cursor = '<span class="cursor"></span>';
+  var promptShown = false;
 
-  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-  function typeIn(){
-    if(reduce){ el.innerHTML = esc(promptText) + cursor; return; }
-    var i = 0;
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showPromptFull(){ promptEl.innerHTML = esc(PROMPT[lang]) + cursor; promptShown = true; }
+  function typePrompt(){
+    if (promptShown) return;
+    if (reduce) { showPromptFull(); return; }
+    var txt = PROMPT[lang], i = 0;
     (function step(){
-      el.innerHTML = esc(promptText.slice(0,i)) + cursor;
-      i++;
-      if(i <= promptText.length){ setTimeout(step, 14); }
+      promptEl.innerHTML = esc(txt.slice(0,i)) + cursor; i++;
+      if (i <= txt.length) setTimeout(step, 14); else promptShown = true;
     })();
   }
 
-  // type in when the terminal scrolls into view (once)
-  var fired = false;
+  function applyLang(l){
+    lang = l; localStorage.setItem('mv_lang', l);
+    document.documentElement.lang = (l === 'zh') ? 'zh' : 'en';
+    var t = I18N[l];
+    document.querySelectorAll('[data-i18n]').forEach(function(e){
+      var k = e.getAttribute('data-i18n'); if (t[k] != null) e.textContent = t[k];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function(e){
+      var k = e.getAttribute('data-i18n-html'); if (t[k] != null) e.innerHTML = t[k];
+    });
+    document.getElementById('langToggle').textContent = (l === 'zh') ? 'EN' : '中';
+  }
+
+  applyLang(lang);
+
+  document.getElementById('langToggle').addEventListener('click', function(){
+    applyLang(lang === 'zh' ? 'en' : 'zh');
+    showPromptFull(); // reflect the new language in the prompt immediately
+  });
+
+  // typewriter on first scroll into view
   var term = document.querySelector('.terminal');
-  if('IntersectionObserver' in window && !reduce){
+  if ('IntersectionObserver' in window && !reduce) {
     var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting && !fired){ fired = true; typeIn(); io.disconnect(); } });
+      entries.forEach(function(e){ if (e.isIntersecting && !promptShown) { typePrompt(); io.disconnect(); } });
     }, {threshold:.35});
     io.observe(term);
-  } else { typeIn(); }
+  } else { typePrompt(); }
 
-  var btn = document.getElementById('copy');
-  btn.addEventListener('click', function(){
-    navigator.clipboard.writeText(promptText).then(function(){
-      btn.textContent = 'Copied ✓'; btn.classList.add('done');
-      setTimeout(function(){ btn.textContent = 'Copy prompt'; btn.classList.remove('done'); }, 1900);
+  document.getElementById('copy').addEventListener('click', function(){
+    var btn = this;
+    navigator.clipboard.writeText(PROMPT[lang]).then(function(){
+      var done = (lang === 'zh') ? '已复制 ✓' : 'Copied ✓';
+      btn.textContent = done; btn.classList.add('done');
+      setTimeout(function(){ btn.textContent = I18N[lang].copyBtn; btn.classList.remove('done'); }, 1900);
     });
   });
 
-  // gauge needle: settle once on load
-  if(!reduce){
+  if (!reduce) {
     var n = document.querySelector('.needle');
-    if(n){ n.animate([{transform:'rotate(-34deg)'},{transform:'rotate(0deg)'}],
-      {duration:1100, easing:'cubic-bezier(.2,.8,.2,1)'}); }
+    if (n) n.animate([{transform:'rotate(-34deg)'},{transform:'rotate(0deg)'}], {duration:1100, easing:'cubic-bezier(.2,.8,.2,1)'});
   }
 </script>
 </body>
